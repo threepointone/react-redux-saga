@@ -3,7 +3,7 @@ react-redux-saga
 
 react bindings for [redux-saga](https://github.com/yelouafi/redux-saga/)
 
-![kanyewestiskanyebest](https://i.imgur.com/Gcs02Lo.png)
+<img src="https://i.imgur.com/Gcs02Lo.png" width="300" height="300" alt="kanyewestiskanyebest">
 
 ```jsx
 import {Saga} from 'react-redux-saga';
@@ -31,9 +31,9 @@ include `<Sagas>` high up in your react tree, and pass it the result of `createS
 
 ```jsx
   let middle = createSagaMiddleware();
-  let store = createStore(/* reducer */, middle); // from redux
+  let store = createStore(/* reducer */, applyMiddleware(/* ... */, middle)); // from redux
 
-  render(<Sagas middleware={middle}>  // react-dom, etc
+  render(<Sagas middleware={middle}>  /* react-dom, etc */
     <App />
   </Sagas>, dom);
 }
