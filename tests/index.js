@@ -22,7 +22,6 @@ class SagaRoot extends Component {
   sagaMiddleware = createSagaMiddleware()
   store = createStore(
     combineReducers(this.props.reducers || { x: (x = {}) => x }),
-    this.props.initial || {},
     applyMiddleware(this.sagaMiddleware)
   )
   render() {
@@ -115,8 +114,8 @@ describe('react-redux-saga', () => {
   it('decorator version', () => {
 
     let App = saga(function*(getState, { x }) {
+      expect(getState().x).toEqual({ a: 123 })
       expect(x).toEqual(123)
-      expect(getState().x).toEqual(456)
 
     })(
     class App extends Component {
@@ -125,7 +124,9 @@ describe('react-redux-saga', () => {
       }
     })
 
-    render(<SagaRoot initial={{ x: 456 }}><App x={123}/></SagaRoot>, node)
+    render(<SagaRoot reducers={{ x: (state = { a: 123 }) => state }}>
+      <App x={123}/>
+    </SagaRoot>, node)
 
   })
 })
