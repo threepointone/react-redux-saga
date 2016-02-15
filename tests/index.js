@@ -1,6 +1,6 @@
 /* global describe, it, beforeEach, afterEach */
 import React, { Component } from 'react'
-import { Sagas, Saga } from '../src/'
+import { Sagas, Saga, saga } from '../src/'
 import { createStore, applyMiddleware, combineReducers } from 'redux'
 import { Provider } from 'react-redux'
 import { render, unmountComponentAtNode } from 'react-dom'
@@ -22,6 +22,7 @@ class SagaRoot extends Component {
   sagaMiddleware = createSagaMiddleware()
   store = createStore(
     combineReducers(this.props.reducers || { x: (x = {}) => x }),
+    this.props.initial || {},
     applyMiddleware(this.sagaMiddleware)
   )
   render() {
@@ -38,25 +39,24 @@ describe('react-redux-saga', () => {
   beforeEach(() => node = document.createElement('div'))
   afterEach(() => unmountComponentAtNode(node))
 
-  it('should throw when you don\'t include <Sagas>')
+  it('should throw when you don\'t include <Sagas>', () => {
+    let run = function*() {}
+    expect(() => render(<Saga saga={run} />, node)).toThrow()
+  })
 
     // sagas
   it('accepts a saga', done => {
     let started = false
 
-    class App extends Component {
-      *saga() {
-        started = true
-        yield cps(sleep, 300)
-        done()
-      }
-      render() {
-        return <Saga saga={this.saga}/>
-      }
+    let run = function*() {
+      started = true
+      yield cps(sleep, 300)
+      done()
     }
+
     expect(started).toEqual(false)
 
-    render(<SagaRoot><App /></SagaRoot>, node)
+    render(<SagaRoot><Saga saga={run}/></SagaRoot>, node)
     expect(started).toEqual(true)
   })
 
@@ -67,25 +67,21 @@ describe('react-redux-saga', () => {
   it('gets cancelled when the component unmounts', done => {
     let unmounted = false
 
-    class App extends Component {
-      *saga() {
-        try {
-          while (TRUE) {
-            yield cps(sleep, 100)
-          }
-        }
-        catch (e) {
-          if (isCancelError(e) && unmounted === true) {
-            done()
-          }
+    let run = function*() {
+      try {
+        while (TRUE) {
+          yield cps(sleep, 100)
         }
       }
-      render() {
-        return <Saga saga={this.saga} />
+      catch (e) {
+        if (isCancelError(e) && unmounted === true) {
+          done()
+        }
       }
     }
 
-    render(<SagaRoot><App /></SagaRoot>, node)
+
+    render(<SagaRoot><Saga saga={run} /></SagaRoot>, node)
 
     sleep(500, () => {
       unmounted = true
@@ -96,34 +92,40 @@ describe('react-redux-saga', () => {
   })
 
   it('can receive props', done => {
-    class App extends Component {
-      *saga(_, { x }) {
-        expect(x).toEqual(123)
-        done()
-      }
-      render() {
-        return <Saga saga={this.saga} x={123} />
-      }
+    let run = function*(_, { x }) {
+      expect(x).toEqual(123)
+      done()
     }
 
-    render(<SagaRoot><App/></SagaRoot>, node)
+    render(<SagaRoot><Saga saga={run} x={123} /></SagaRoot>, node)
   })
 
   it('can read from global redux state', done => {
-
-    class App extends Component {
-      *saga(getState) {
-        expect(getState().x.a).toEqual(123)
-        done()
-      }
-      render() {
-        return <Saga saga={this.saga} />
-      }
+    let run = function *(getState) {
+      expect(getState().x.a).toEqual(123)
+      done()
     }
 
     render(<SagaRoot reducers={{ x: (state = { a: 123 }) => state }}>
-      <App/>
+      <Saga saga={run} />
     </SagaRoot>, node)
+
+  })
+
+  it('decorator version', () => {
+
+    let App = saga(function*(getState, { x }) {
+      expect(x).toEqual(123)
+      expect(getState().x).toEqual(456)
+
+    })(
+    class App extends Component {
+      render() {
+        return null
+      }
+    })
+
+    render(<SagaRoot initial={{ x: 456 }}><App x={123}/></SagaRoot>, node)
 
   })
 })

@@ -22,6 +22,16 @@ function* run(getState, {x, y}){
 
 <Saga x={1} y={2} saga={run} />
 
+// alternately, there's a decorator version
+@saga(function*(getState, props){
+  //
+})
+class App extends Component{
+  render(){
+    // ...
+  }
+}
+
 ```
 
 getting started
