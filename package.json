@@ -1,7 +1,7 @@
 {
   "name": "react-redux-saga",
   "version": "1.0.0",
-  "description": "",
+  "description": "react bindings for redux-saga",
   "main": "lib/index.js",
   "scripts": {
     "build": "NODE_ENV=production babel src -d lib",
