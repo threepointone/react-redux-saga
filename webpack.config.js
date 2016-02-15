@@ -1,7 +1,7 @@
-var path = require('path');
+var path = require('path')
 module.exports = {
   entry: {
-    app: ['babel-polyfill', './example/index.js']
+    app: [ 'babel-polyfill', './example/index.js' ]
   },
   output: {
     path: path.join(__dirname, './example'),
@@ -14,4 +14,4 @@ module.exports = {
       { test: /\.css$/, loader: 'style-loader!css-loader?modules' }
     ]
   }
-};
+}

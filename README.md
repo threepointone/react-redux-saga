@@ -53,4 +53,4 @@ include `<Sagas>` high up in your react tree, and pass it the result of `createS
 etc
 ---
 
-- this module comes from the work on [redux-react-local](https://github.com/threepointone/redux-react-local), and works well with it
+- from the work on [redux-react-local](https://github.com/threepointone/redux-react-local)
