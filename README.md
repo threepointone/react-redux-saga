@@ -24,7 +24,7 @@ function* run(getState, {x, y}){
 
 // alternately, there's a decorator version
 @saga(function*(getState, props){
-  //
+  // happy, @sebastienlorber?
 })
 class App extends Component{
   render(){
