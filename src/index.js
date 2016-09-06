@@ -19,35 +19,30 @@ export class Sagas extends Component {
   }
 }
 
-// <Saga saga={generator} {...props}/>
-// simple!
 export class Saga extends Component {
   static propTypes = {
-    saga: PropTypes.func.isRequired // todo - test fpr generator
+    saga: PropTypes.func.isRequired,
   };
   static contextTypes = {
-    sagas: PropTypes.func.isRequired
+    sagas: PropTypes.func.isRequired,
   };
 
-  componentDidMount() {
-    if(!this.context.sagas) {
-      throw new Error('did you forget to include <Sagas/>?')
+  componentWillMount() {
+    if (!this.context.sagas) {
+      throw new Error('did you forget to include <Sagas/>?');
     }
-    this.runningSaga = this.context.sagas.run(this.props.saga, this.props)
+    this.runningSaga = this.context.sagas.run(this.props.saga, this.props);
   }
 
-  componentWillReceiveProps() {
-    // ??
+  componentWillUnmount() {
+    if (this.runningSaga) {
+      this.runningSaga.cancel();
+      delete this.runningSaga;
+    }
   }
+
   render() {
     return !this.props.children ? null : Children.only(this.props.children)
-  }
-  componentWillUnmount() {
-    if(this.runningSaga) {
-      this.runningSaga.cancel()
-      delete this.runningSaga
-    }
-
   }
 }
 
@@ -64,4 +59,3 @@ export function saga(run) {
     }
   }
 }
-
