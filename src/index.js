@@ -1,4 +1,5 @@
-import React, { PropTypes, Children, Component } from 'react'
+import React, { Children, Component } from 'react'
+import PropTypes from 'prop-types';
 
 // top level component
 export class Sagas extends Component {
